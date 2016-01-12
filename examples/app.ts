@@ -20,10 +20,8 @@ import {QueryList} from "angular2/core";
 import {NavigationService} from "./services/navigation";
 import {AfterViewInit} from "angular2/core";
 import {VersionService} from "./services/version";
-
-//
-// PLUNKR for ng2: http://plnkr.co/edit/UPJESEgyKFsm4hyW4fWR
-//
+import { AppViewListener } from 'angular2/src/core/linker/view_listener';
+import { DebugElementViewListener } from 'angular2/platform/common_dom';
 
 /**
  * Describe an example that can be dynamically loaded.
@@ -65,10 +63,17 @@ export class DemosApp {
 
 }
 
-enableProdMode();
-
-bootstrap(DemosApp, [
+let appProviders = [
   HTTP_PROVIDERS, ROUTER_PROVIDERS, MATERIAL_PROVIDERS,
   ComponentsService, NavigationService, VersionService,
   bind(LocationStrategy).toClass(HashLocationStrategy)
-]);
+];
+
+if(window.location.href.indexOf('github.com') !== -1){
+  enableProdMode();
+}
+else {
+  appProviders.push(bind(AppViewListener).toClass(DebugElementViewListener))
+}
+
+bootstrap(DemosApp, appProviders);
